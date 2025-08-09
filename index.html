@@ -120,7 +120,6 @@
       line-height: 1.5;
     }
 
-    /* Phần ký tên được sửa */
     .sign-section {
       display: flex;
       justify-content: space-around;
@@ -132,21 +131,29 @@
       text-align: center;
     }
 
+    .sign-col p {
+      margin: 5px 0;
+    }
+
     .sign-title {
       font-weight: bold;
       text-transform: uppercase;
-      margin-bottom: 8px;
+    }
+    .sign-placeholder {
+      font-style: italic;
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 40px;
     }
 
-    .sign-signature {
-      height: 80px; /* chiều cao ô ký tên */
-            margin-bottom: 10px;
+    .sign-space {
+      min-height: 60px;
     }
 
     .sign-name {
+      margin-top: 60px;
       font-weight: bold;
       text-decoration: underline;
-      margin-top: 0;
     }
 
     .btn-group {
@@ -196,17 +203,17 @@
       <h1>CÔNG TY CỔ PHẦN ĐẦU TƯ PHÁT TRIỂN CÔNG NGHỆ HOMESTECH</h1>
       <h2>PHIẾU ĐỀ NGHỊ THANH TOÁN</h2>
     </div>
-    <div class="code">Mã phiếu: 1be029a9</div>
+    <div class="code">Mã phiếu TT: 1be029a9</div>
 
     <table class="info-table">
       <tr>
-        <td class="label">ID:</td><td><span class="value">e364937a</span></td>
+        <td class="label">Mã Phiếu MH:</td><td><span class="value">e364937a</span></td>
         <td class="label">Hình thức TT:</td><td><span class="value">Chuyển Khoản</span></td>
       </tr>
       <tr>
         <td class="label">Ngày tạo:</td><td><span class="value">08/08/2025</span></td>
         <td class="label">Số TK:</td>
-        <td><span class="long-value">04401010016294 - Ngân hàng TMCP Hàng Hải Việt Nam<br>Công Ty TNHH TM Công Nghệ Trung Anh</span></td>
+        <td><span class="long-value">04401010016294 - Ngân hàng TMCP Hàng Hải Việt Nam<br />Công Ty TNHH TM Công Nghệ Trung Anh</span></td>
       </tr>
       <tr>
         <td class="label">Nhà cung cấp:</td><td><span class="value">NCC0017</span></td>
@@ -224,16 +231,19 @@
     <div class="sign-section">
       <div class="sign-col">
         <p class="sign-title">Người đề nghị</p>
-        <p class="sign-signature"></p>
-        <p class="sign-name">Phạm Thị Thu Thủy</p>
+        <p class="sign-placeholder">(Ký, ghi rõ họ tên)</p>
+        <div class="sign-space"></div>
+        <p class="sign-name">---</p>
       </div>
       <div class="sign-col">
         <p class="sign-title">Giám đốc duyệt</p>
-        <p class="sign-signature"></p>
-        <p class="sign-name" id="tenGiamDoc">Trần Văn Bảo</p>
+        <p class="sign-placeholder">(Ký, ghi rõ họ tên)</p>
+        <div class="sign-space"></div>
+        <p class="sign-name">Trần Văn Bảo</p>
       </div>
     </div>
   </div>
+
 
   <div class="btn-group">
     <button id="printBtn" onclick="window.print()">🖨️ In Phiếu</button>
@@ -241,18 +251,55 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <script>
-    // Ví dụ lấy tên Giám Đốc từ URL và hiển thị
-    function getQueryParam(param) {
+    // Hàm lấy tham số URL
+    function getParameterByName(name) {
       const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(param);
+      return urlParams.get(name) || '';
     }
 
-    const tenGiamDoc = getQueryParam('TenGiamDoc');
-    if (tenGiamDoc) {
-      document.getElementById('tenGiamDoc').textContent = decodeURIComponent(tenGiamDoc);
-    }
+    // Lấy dữ liệu từ URL
+    const id = getParameterByName('MaDNMH');
+    const maPhieu = getParameterByName('idYeuCau');
+    const ngayTao = getParameterByName('NgayTao');
+    const nhaCungCap = getParameterByName('NhaCungCap');
+    const hinhThucTT = getParameterByName('HinhThucTT');
+    const soTK = getParameterByName('SoTK');
+    const soTien = getParameterByName('SoTien');
+    const nguoiDeNghi = getParameterByName('NguoiDeNghi');
+    const lyDoTT = getParameterByName('LyDoThanhToan');
+    const trangThai = getParameterByName('TrangThai');
 
+    // Cập nhật nội dung trang
+    document.querySelector('.code').textContent = `Mã phiếu: ${maPhieu || '---'}`;
+    const tds = document.querySelectorAll('.info-table td');
+
+    // Cập nhật ID
+    tds[1].querySelector('.value').textContent = id || '---';
+    // Cập nhật Hình thức TT
+    tds[3].querySelector('.value').textContent = hinhThucTT || '---';
+    // Cập nhật Ngày tạo
+    tds[5].querySelector('.value').textContent = ngayTao || '---';
+    // Cập nhật Số TK (có thể có nhiều dòng nên xử lý xuống dòng)
+    tds[7].querySelector('.long-value').innerHTML = soTK ? soTK.replace(/\n/g, '<br />') : '---';
+    // Cập nhật Nhà cung cấp
+    tds[9].querySelector('.value').textContent = nhaCungCap || '---';
+    // Cập nhật Số tiền
+    tds[11].querySelector('.value-red').textContent = soTien ? `${soTien} ₫` : '---';
+    // Cập nhật Người đề nghị
+    tds[13].querySelector('.value').textContent = nguoiDeNghi || '---';
+    // Cập nhật Trạng thái
+    const statusSpan = tds[15].querySelector('.status');
+    statusSpan.textContent = trangThai || '---';
+
+    // Cập nhật lý do thanh toán
+    document.querySelector('.reason-box').textContent = lyDoTT || '---';
+
+    // Cập nhật tên người đề nghị trong chữ ký
+    document.querySelector('.sign-section .sign-col .sign-name').textContent = nguoiDeNghi || '---';
+
+    // Xử lý nút xuất PDF
     document.getElementById("exportBtn").addEventListener("click", () => {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({
